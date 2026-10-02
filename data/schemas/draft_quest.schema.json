@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "draft_quest.schema.json",
+  "title": "Quest (draft, 寰?GDD v1.1)",
+  "type": "object",
+  "required": ["id", "title", "objectives", "rewards"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^quest_[a-z0-9_]+$" },
+    "title": { "type": "string", "minLength": 1 },
+    "objectives": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["type", "target", "count"],
+        "additionalProperties": false,
+        "properties": {
+          "type": { "enum": ["kill", "collect", "reach", "place"] },
+          "target": { "type": "string", "pattern": "^(enemy|item|biome|tile)_[a-z0-9_]+$" },
+          "count": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "rewards": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "coin": { "type": "integer", "minimum": 0, "default": 0 },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["item_id", "count"],
+            "additionalProperties": false,
+            "properties": {
+              "item_id": { "type": "string", "pattern": "^item_[a-z0-9_]+$" },
+              "count": { "type": "integer", "minimum": 1 }
+            }
+          }
+        }
+      }
+    }
+  }
+}
