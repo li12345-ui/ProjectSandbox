@@ -23,11 +23,13 @@ jobs:
           fetch-depth: 0  # 保留完整历史，方便后续 git 操作
 
       # 2. Setup Godot 4.7.2 .NET 版（官方 GitHub Release 直下，不依赖第三方 action，
-      #    C# 依赖 GodotSharp，必须用 mono 包；下载约 100MB，15 分钟超时保护内足够）
+      #    C# 依赖 GodotSharp，必须用 mono 包；set -eux 让失败行直接暴露在日志里；
+      #    新版 runner 镜像无 wget，用 curl；下载约 100MB，15 分钟超时保护内足够）
       - name: Setup Godot 4.7.2 (.NET)
         run: |
-          wget -q --timeout=60 "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_mono_linux_x86_64.zip"
-          unzip -q Godot_v4.7.2-stable_mono_linux_x86_64.zip
+          set -eux
+          curl -fL -o godot.zip "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_mono_linux_x86_64.zip"
+          unzip -q godot.zip
           sudo mv Godot_v4.7.2-stable_mono_linux_x86_64 /usr/local/bin/godot
           sudo chmod +x /usr/local/bin/godot
           godot --version  # 打印版本验证安装成功
