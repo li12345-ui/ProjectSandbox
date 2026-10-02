@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read  # 仅需读代码+上传产物，无写权限
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest  # Godot 4 + .NET 10 跨平台，先用最省资源的 Linux runner
+    timeout-minutes: 15     # 超时保护，避免卡死
+
+    steps:
+      # 1. Checkout 代码（拉取 main 分支全量，含子模块如有）
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0  # 保留完整历史，方便后续 git 操作
+
+      # 2. Setup Godot 4.7.2（C# 依赖 GodotSharp，必须先装 Godot .NET 版编辑器）
+      - name: Setup Godot 4.7.2 (.NET)
+        uses: barichello/godot-ci@v1
+        with:
+          version: "4.7.2"          # 约定与本地开发版本一致，避免构建漂移
+          os: "linux"
+          # 注：barichello/godot-ci 的 version 格式为 X.Y.Z（不加 -stable 后缀）
+          # .NET/mono 风味由该 action 内部逻辑处理；若 4.7.2 mono 不可用，
+          # 后续改为纯 shell 手动下载 Godot zip 兜底
+
+      # 3. Setup .NET SDK 10（2025 LTS，Godot 4.5+ 要求 .NET 8+，"or later" 含 9/10）
+      - name: Setup .NET SDK 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.x"
+          dotnet-quality: "stable"
+
+      # 4. 校验 .sln/.csproj 是否存在（Godot headless 不保证能生成 .NET 解决方案，
+      #     用户首次使用须在本地 Godot .NET 编辑器里打开一次项目，让编辑器自动生成后提交）
+      - name: Verify .sln/.csproj exists
+        run: |
+          if [ ! -f ProjectSandbox.sln ]; then
+            echo "ERROR: 未找到 ProjectSandbox.sln"
+            echo "请在本地 Godot 4.7 .NET 编辑器中打开项目一次，让编辑器自动生成 .sln/.csproj 后提交到仓库。"
+            exit 1
+          fi
+
+      # 5. 构建 C# 项目（Debug 配置，便于调试）
+      - name: Build .NET project
+        run: dotnet build ProjectSandbox.sln --configuration Debug --no-incremental
+        env:
+          DOTNET_CLI_HOME: /tmp/dotnet  # 避免 runner 根目录写权限问题
+          DOTNET_NOLOGO: "true"          # 减少日志噪音
+
+      # 6. 运行 tests/ 下的 Godot 最小自测脚本（当前占位，等补测试后替换）
+      - name: Run tests
+        run: |
+          echo "tests/ 目录待补测试脚本，此处为占位逻辑"
+          # 后续替换为：
+          # find tests -maxdepth 2 -name "*.cs" -type f | while read -r test_script; do
+          #   echo "Running $test_script..."
+          #   godot --headless --script "$test_script" --quit || exit 1
+          # done
+
+      # 7. 冒烟测试：实际加载主场景（非仅打开项目管理器）
+      - name: Smoke test (load Main.tscn)
+        run: |
+          godot --headless --path . --scene res://Main.tscn --quit
+        env:
+          GODOT_DISABLE_CRASH_HANDLER: "1"  # 让崩溃直接以非零退出码暴露
+
+      # 8. 上传构建产物（供调试、后续 Release 工作流使用）
+      # 注：Godot.NET.Sdk 将产物放在 .godot/mono/temp/bin/Debug/，
+      #     而非标准的 bin/Debug/net8.0/
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            .godot/mono/temp/bin/Debug/
+          if-no-files-found: warn  # 避免无产物时 CI 失败
+          retention-days: 7        # 短期调试用，7 天后自动清理
