@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "biome.schema.json",
+  "title": "Biome",
+  "type": "object",
+  "required": ["id", "display_name", "layer"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^biome_[a-z0-9_]+$" },
+    "display_name": { "type": "string", "minLength": 1 },
+    "layer": { "enum": ["sky", "surface", "mid", "deep"] },
+    "depth_range": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "min": { "type": "integer", "minimum": 0 },
+        "max": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "default_block": { "type": "string", "pattern": "^tile_[a-z0-9_]+$" },
+    "ore_pools": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/weightedPool" },
+      "description": "鐭胯剦妯℃澘锛屾寜鏉冮噸鎶藉彇"
+    },
+    "enemy_pool": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/weightedPool" },
+      "description": "澶滈棿/甯搁┗鏁屾€〃"
+    },
+    "spreads": { "type": "boolean", "default": false, "description": "鏄惁渚佃殌閭绘帴鍦板潡" }
+  },
+  "$defs": {
+    "weightedPool": {
+      "type": "object",
+      "required": ["ref", "weight"],
+      "additionalProperties": false,
+      "properties": {
+        "ref": { "type": "string", "description": "鐩爣 id锛坱ile_ 鎴?enemy_ 鎴?loot_锛? },
+        "weight": { "type": "integer", "minimum": 1 },
+        "count_min": { "type": "integer", "minimum": 1, "default": 1 },
+        "count_max": { "type": "integer", "minimum": 1, "default": 1 }
+      }
+    }
+  }
+}
