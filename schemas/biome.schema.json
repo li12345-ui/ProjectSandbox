@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "biome.schema.json",
+  "title": "Biome",
+  "type": "object",
+  "required": ["id", "display_name", "layer"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^biome_[a-z0-9_]+$" },
+    "display_name": { "type": "string", "minLength": 1 },
+    "layer": { "enum": ["sky", "surface", "mid", "deep"] },
+    "depth_range": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "min": { "type": "integer", "minimum": 0 },
+        "max": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "default_block": { "type": "string", "pattern": "^tile_[a-z0-9_]+$" },
+    "ore_pools": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/weightedPool" },
+      "description": "矿脉模板，按权重抽取"
+    },
+    "enemy_pool": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/weightedPool" },
+      "description": "夜间/常驻敌怪表"
+    },
+    "spreads": { "type": "boolean", "default": false, "description": "是否侵蚀邻接地块" }
+  },
+  "$defs": {
+    "weightedPool": {
+      "type": "object",
+      "required": ["ref", "weight"],
+      "additionalProperties": false,
+      "properties": {
+        "ref": { "type": "string", "description": "目标 id（tile_ 或 enemy_ 或 loot_）" },
+        "weight": { "type": "integer", "minimum": 1 },
+        "count_min": { "type": "integer", "minimum": 1, "default": 1 },
+        "count_max": { "type": "integer", "minimum": 1, "default": 1 }
+      }
+    }
+  }
+}

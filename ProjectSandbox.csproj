@@ -1,0 +1,15 @@
+<Project Sdk="Godot.NET.Sdk/4.7.2">
+  <PropertyGroup>
+    <!-- 
+      Project Sandbox — C# 项目文件
+      工具链：Godot 4.7.2 (.NET mono) + .NET SDK 10
+      TargetFramework 选 net8.0（GodotSharp 最低要求），.NET 10 SDK 向下兼容编译 net8.0
+      等 GodotSharp 官方确认 net10.0 没问题再升级 TargetFramework
+    -->
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>ProjectSandbox</RootNamespace>
+  </PropertyGroup>
+</Project>
