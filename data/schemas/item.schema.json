@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "item.schema.json",
+  "title": "Item",
+  "type": "object",
+  "required": ["id", "display_name", "category"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^item_[a-z0-9_]+$" },
+    "display_name": { "type": "string", "minLength": 1 },
+    "category": { "enum": ["material", "tool", "weapon", "armor", "placeable", "consumable", "key_item"] },
+    "stack_size": { "type": "integer", "minimum": 1, "maximum": 999, "default": 99 },
+    "rarity": { "enum": ["common", "uncommon", "rare", "epic", "legendary"], "default": "common" },
+    "durability": { "type": "integer", "minimum": 0 },
+    "mining_tier": { "type": "integer", "minimum": 0, "description": "鎸栨帢璇ョ墿鍧楁墍闇€鐨勫伐鍏锋。浣嶉棬妲? },
+    "damage": { "type": "integer", "minimum": 0 },
+    "stats": { "$ref": "#/$defs/statsBlock" },
+    "place": { "type": "string", "pattern": "^tile_[a-z0-9_]+$", "description": "鍙斁缃墿鍧?id锛坧laceable 绫伙級" },
+    "use_effect": { "type": "string", "description": "浣跨敤鏁堟灉鑴氭湰娉ㄥ唽鍚嶏紝纭鍒欏疄鐜? }
+  },
+  "$defs": {
+    "statsBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hp_bonus": { "type": "integer", "default": 0 },
+        "speed_bonus": { "type": "integer", "default": 0 },
+        "attack_bonus": { "type": "integer", "default": 0 },
+        "defense_bonus": { "type": "integer", "default": 0 }
+      }
+    }
+  }
+}
