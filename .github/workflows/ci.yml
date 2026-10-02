@@ -22,15 +22,15 @@ jobs:
           submodules: true
           fetch-depth: 0  # 保留完整历史，方便后续 git 操作
 
-      # 2. Setup Godot 4.7.2（C# 依赖 GodotSharp，必须先装 Godot .NET 版编辑器）
+      # 2. Setup Godot 4.7.2 .NET 版（官方 GitHub Release 直下，不依赖第三方 action，
+      #    C# 依赖 GodotSharp，必须用 mono 包；下载约 100MB，15 分钟超时保护内足够）
       - name: Setup Godot 4.7.2 (.NET)
-        uses: barichello/godot-ci@v1
-        with:
-          version: "4.7.2"          # 约定与本地开发版本一致，避免构建漂移
-          os: "linux"
-          # 注：barichello/godot-ci 的 version 格式为 X.Y.Z（不加 -stable 后缀）
-          # .NET/mono 风味由该 action 内部逻辑处理；若 4.7.2 mono 不可用，
-          # 后续改为纯 shell 手动下载 Godot zip 兜底
+        run: |
+          wget -q --timeout=60 "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_mono_linux_x86_64.zip"
+          unzip -q Godot_v4.7.2-stable_mono_linux_x86_64.zip
+          sudo mv Godot_v4.7.2-stable_mono_linux_x86_64 /usr/local/bin/godot
+          sudo chmod +x /usr/local/bin/godot
+          godot --version  # 打印版本验证安装成功
 
       # 3. Setup .NET SDK 10（2025 LTS，Godot 4.5+ 要求 .NET 8+，"or later" 含 9/10）
       - name: Setup .NET SDK 10
