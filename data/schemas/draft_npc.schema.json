@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "draft_npc.schema.json",
+  "title": "NPC (draft, 待 GDD v1.1)",
+  "type": "object",
+  "required": ["id", "display_name", "role"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^npc_[a-z0-9_]+$" },
+    "display_name": { "type": "string", "minLength": 1 },
+    "role": { "enum": ["vendor", "craft_service", "quest_giver", "dialog_only"] },
+    "shop_table": { "type": "string", "pattern": "^loot_[a-z0-9_]+$" },
+    "dialog_set": { "type": "string", "pattern": "^dialog_[a-z0-9_]+$" }
+  }
+}

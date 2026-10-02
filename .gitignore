@@ -1,0 +1,28 @@
+# Godot 4 — 编辑器生成
+.godot/
+.import/
+
+# C# 构建产物
+bin/
+obj/
+*.csproj.user
+*.sln.docstates
+
+# Godot 崩溃日志
+.mono_crash.*
+
+# 系统 / 编辑器临时文件
+*.tmp
+*.bak
+*.tmp.tscn
+
+# 本地存储（占位，后续若需提交存档示例再放开）
+/user://
+*.save
+*.sav
+
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
