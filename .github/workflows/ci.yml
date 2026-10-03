@@ -73,10 +73,11 @@ jobs:
           DOTNET_CLI_HOME: /tmp/dotnet  # 避免 runner 根目录写权限问题
           DOTNET_NOLOGO: "true"          # 减少日志噪音
 
-      # 6. 运行 tests/ 下的 Core 最小自测（断言失败以退出码 1 结束，使本步失败）
+      # 6. 运行 tests/ 下全部自测脚本（断言失败以退出码 1 结束，使本步失败）
       - name: Run tests
         run: |
           godot --headless --path . --script res://tests/CoreSelfTest.cs --quit
+          godot --headless --path . --script res://tests/WorldSelfTest.cs --quit
         env:
           GODOT_DISABLE_CRASH_HANDLER: "1"
 
