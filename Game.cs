@@ -57,11 +57,19 @@ public partial class Game : Node
         var loader = ServiceLocator.Instance.Get<IDataLoader>();
         var registry = new BlockRegistry(loader);
         var generator = new WorldGenerator(loader, registry);
+        var grid = generator.Generate();
+
         var renderer = new WorldRenderer();
-        renderer.Initialize(generator.Generate(), registry);
+        renderer.Initialize(grid, registry);
         AddChild(renderer);
+
+        // 交互三件套共用同一网格：规则（BlockInteraction）改数据，渲染器只负责同步显示
+        var interaction = new BlockInteraction(grid, registry);
+        AddChild(new WorldCamera(new Rect2(0, 0, grid.Width * WorldRenderer.TileSize, grid.Height * WorldRenderer.TileSize)));
+        AddChild(new WorldInputController(interaction, renderer, registry));
+
         _worldReady = true;
-        GD.Print($"[Game] 世界已生成并挂载渲染：{generator.Width}x{generator.Height}");
+        GD.Print($"[Game] 世界已生成并挂载渲染/相机/输入：{generator.Width}x{generator.Height}");
     }
 
     public override void _Notification(int what)
