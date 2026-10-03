@@ -38,6 +38,363 @@
       "rarity": "rare",
       "durability": 200,
       "damage": 18
+    },
+    {
+      "id": "item_loam_pod",
+      "display_name": "壤土种子荚",
+      "category": "material",
+      "stack_size": 99,
+      "rarity": "common"
+    },
+    {
+      "id": "item_shale_flake",
+      "display_name": "页岩薄片",
+      "category": "material",
+      "stack_size": 99,
+      "rarity": "common"
+    },
+    {
+      "id": "item_basalt_chip",
+      "display_name": "玄武碎屑",
+      "category": "material",
+      "stack_size": 99,
+      "rarity": "common"
+    },
+    {
+      "id": "item_fire_vein",
+      "display_name": "火脉矿",
+      "category": "material",
+      "stack_size": 99,
+      "rarity": "uncommon"
+    },
+    {
+      "id": "item_frost_dust",
+      "display_name": "霜尘",
+      "category": "material",
+      "stack_size": 99,
+      "rarity": "uncommon"
+    },
+    {
+      "id": "item_amber_glob",
+      "display_name": "琥珀胶球",
+      "category": "material",
+      "stack_size": 99,
+      "rarity": "uncommon"
+    },
+    {
+      "id": "item_void_silk",
+      "display_name": "虚空纤维",
+      "category": "material",
+      "stack_size": 99,
+      "rarity": "rare"
+    },
+    {
+      "id": "item_star_mote",
+      "display_name": "星屑",
+      "category": "material",
+      "stack_size": 99,
+      "rarity": "rare"
+    },
+    {
+      "id": "item_luminous_spore",
+      "display_name": "荧光孢子",
+      "category": "material",
+      "stack_size": 99,
+      "rarity": "common"
+    },
+    {
+      "id": "item_iron_pellet",
+      "display_name": "铁熔丸",
+      "category": "material",
+      "stack_size": 99,
+      "rarity": "common"
+    },
+    {
+      "id": "item_copper_wire",
+      "display_name": "铜绞线",
+      "category": "material",
+      "stack_size": 99,
+      "rarity": "common"
+    },
+    {
+      "id": "item_tide_shard",
+      "display_name": "潮汐棱",
+      "category": "material",
+      "stack_size": 99,
+      "rarity": "epic"
+    },
+    {
+      "id": "item_wind_plume",
+      "display_name": "风翎",
+      "category": "material",
+      "stack_size": 99,
+      "rarity": "uncommon"
+    },
+    {
+      "id": "item_earth_root",
+      "display_name": "地根",
+      "category": "material",
+      "stack_size": 99,
+      "rarity": "common"
+    },
+    {
+      "id": "item_iron_pickaxe",
+      "display_name": "铁熔镐",
+      "category": "tool",
+      "rarity": "uncommon",
+      "durability": 300,
+      "mining_tier": 2,
+      "damage": 12
+    },
+    {
+      "id": "item_void_cutter",
+      "display_name": "虚空割凿",
+      "category": "tool",
+      "rarity": "rare",
+      "durability": 500,
+      "mining_tier": 3,
+      "damage": 18
+    },
+    {
+      "id": "item_star_drill",
+      "display_name": "星屑钻",
+      "category": "tool",
+      "rarity": "epic",
+      "durability": 800,
+      "mining_tier": 4,
+      "damage": 24
+    },
+    {
+      "id": "item_fire_axe",
+      "display_name": "火脉斧",
+      "category": "tool",
+      "rarity": "uncommon",
+      "durability": 200,
+      "mining_tier": 1,
+      "damage": 14
+    },
+    {
+      "id": "item_tide_pole",
+      "display_name": "潮汐钓竿",
+      "category": "tool",
+      "rarity": "rare",
+      "durability": 400,
+      "mining_tier": 0,
+      "damage": 4
+    },
+    {
+      "id": "item_amber_hammer",
+      "display_name": "琥珀胶锤",
+      "category": "weapon",
+      "rarity": "uncommon",
+      "durability": 180,
+      "damage": 14
+    },
+    {
+      "id": "item_void_blade",
+      "display_name": "虚空刃",
+      "category": "weapon",
+      "rarity": "rare",
+      "durability": 350,
+      "damage": 22
+    },
+    {
+      "id": "item_stargazer_staff",
+      "display_name": "观星杖",
+      "category": "weapon",
+      "rarity": "epic",
+      "durability": 450,
+      "damage": 30
+    },
+    {
+      "id": "item_fire_fist",
+      "display_name": "火脉拳套",
+      "category": "weapon",
+      "rarity": "uncommon",
+      "durability": 220,
+      "damage": 16
+    },
+    {
+      "id": "item_tide_trident",
+      "display_name": "潮汐三叉",
+      "category": "weapon",
+      "rarity": "epic",
+      "durability": 600,
+      "damage": 28
+    },
+    {
+      "id": "item_star_scythe",
+      "display_name": "星屑镰",
+      "category": "weapon",
+      "rarity": "legendary",
+      "durability": 1000,
+      "damage": 40
+    },
+    {
+      "id": "item_amber_shield",
+      "display_name": "琥珀胶盾",
+      "category": "armor",
+      "rarity": "uncommon",
+      "durability": 200,
+      "stats": { "defense_bonus": 3 }
+    },
+    {
+      "id": "item_void_cloak",
+      "display_name": "虚空披风",
+      "category": "armor",
+      "rarity": "rare",
+      "durability": 300,
+      "stats": { "defense_bonus": 2, "speed_bonus": 1 }
+    },
+    {
+      "id": "item_stargazer_robe",
+      "display_name": "观星袍",
+      "category": "armor",
+      "rarity": "epic",
+      "durability": 400,
+      "stats": { "defense_bonus": 4, "attack_bonus": 2 }
+    },
+    {
+      "id": "item_fire_gauntlets",
+      "display_name": "火脉护腕",
+      "category": "armor",
+      "rarity": "uncommon",
+      "durability": 180,
+      "stats": { "attack_bonus": 2 }
+    },
+    {
+      "id": "item_tide_bracer",
+      "display_name": "潮汐护臂",
+      "category": "armor",
+      "rarity": "rare",
+      "durability": 350,
+      "stats": { "defense_bonus": 3, "hp_bonus": 10 }
+    },
+    {
+      "id": "item_loam_mound",
+      "display_name": "壤土堆",
+      "category": "placeable",
+      "rarity": "common",
+      "place": "tile_soil_loam"
+    },
+    {
+      "id": "item_shale_brick",
+      "display_name": "页岩砖",
+      "category": "placeable",
+      "rarity": "common",
+      "place": "tile_stone_shale"
+    },
+    {
+      "id": "item_basalt_tile",
+      "display_name": "玄武方砖",
+      "category": "placeable",
+      "rarity": "common",
+      "place": "tile_basalt_firm"
+    },
+    {
+      "id": "item_crystal_lamp",
+      "display_name": "晶壳灯",
+      "category": "placeable",
+      "rarity": "uncommon",
+      "place": "tile_crystal_lamp"
+    },
+    {
+      "id": "item_fire_torch",
+      "display_name": "火脉炬",
+      "category": "placeable",
+      "rarity": "common",
+      "place": "tile_fire_torch"
+    },
+    {
+      "id": "item_luminous_veil",
+      "display_name": "荧光幔",
+      "category": "placeable",
+      "rarity": "rare",
+      "place": "tile_luminous_veil"
+    },
+    {
+      "id": "item_void_panel",
+      "display_name": "虚空屏",
+      "category": "placeable",
+      "rarity": "epic",
+      "place": "tile_void_panel"
+    },
+    {
+      "id": "item_heal_berry",
+      "display_name": "愈浆果",
+      "category": "consumable",
+      "rarity": "common",
+      "stack_size": 30,
+      "use_effect": "consumable_heal_2"
+    },
+    {
+      "id": "item_wind_draft",
+      "display_name": "风翎汤",
+      "category": "consumable",
+      "rarity": "uncommon",
+      "stack_size": 20,
+      "use_effect": "consumable_speed_1"
+    },
+    {
+      "id": "item_frost_pill",
+      "display_name": "霜尘丸",
+      "category": "consumable",
+      "rarity": "uncommon",
+      "stack_size": 20,
+      "use_effect": "consumable_resist_fire"
+    },
+    {
+      "id": "item_star_essence",
+      "display_name": "星屑精华",
+      "category": "consumable",
+      "rarity": "epic",
+      "stack_size": 10,
+      "use_effect": "consumable_full_heal"
+    },
+    {
+      "id": "item_tide_draught",
+      "display_name": "潮汐酿",
+      "category": "consumable",
+      "rarity": "rare",
+      "stack_size": 15,
+      "use_effect": "consumable_attack_boost"
+    },
+    {
+      "id": "item_void_paste",
+      "display_name": "虚空膏",
+      "category": "consumable",
+      "rarity": "rare",
+      "stack_size": 15,
+      "use_effect": "consumable_defense_boost"
+    },
+    {
+      "id": "item_amber_potion",
+      "display_name": "琥珀胶饮",
+      "category": "consumable",
+      "rarity": "uncommon",
+      "stack_size": 20,
+      "use_effect": "consumable_heal_3"
+    },
+    {
+      "id": "item_sealed_chart",
+      "display_name": "封印海图",
+      "category": "key_item",
+      "rarity": "epic",
+      "stack_size": 1
+    },
+    {
+      "id": "item_stargazer_lens",
+      "display_name": "观星镜",
+      "category": "key_item",
+      "rarity": "legendary",
+      "stack_size": 1
+    },
+    {
+      "id": "item_void_key",
+      "display_name": "虚空钥",
+      "category": "key_item",
+      "rarity": "legendary",
+      "stack_size": 1
     }
   ]
 }
