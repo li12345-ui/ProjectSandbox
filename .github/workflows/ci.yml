@@ -78,6 +78,7 @@ jobs:
         run: |
           godot --headless --path . --script res://tests/CoreSelfTest.cs --quit
           godot --headless --path . --script res://tests/WorldSelfTest.cs --quit
+          godot --headless --path . --script res://tests/WorldGenSelfTest.cs --quit
           godot --headless --path . --script res://tests/VerticalSliceSelfTest.cs --quit
         env:
           GODOT_DISABLE_CRASH_HANDLER: "1"
