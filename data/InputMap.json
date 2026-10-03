@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "actions": [
+    {
+      "name": "move_left",
+      "bindings": [
+        { "type": "keyboard", "key": "Key.A" },
+        { "type": "keyboard", "key": "Key.Left" },
+        { "type": "gamepad_axis", "axis": "JoyAxis.LeftX", "axis_value": -1.0 }
+      ]
+    },
+    {
+      "name": "move_right",
+      "bindings": [
+        { "type": "keyboard", "key": "Key.D" },
+        { "type": "keyboard", "key": "Key.Right" },
+        { "type": "gamepad_axis", "axis": "JoyAxis.LeftX", "axis_value": 1.0 }
+      ]
+    },
+    {
+      "name": "move_up",
+      "bindings": [
+        { "type": "keyboard", "key": "Key.W" },
+        { "type": "keyboard", "key": "Key.Up" },
+        { "type": "gamepad_axis", "axis": "JoyAxis.LeftY", "axis_value": -1.0 }
+      ]
+    },
+    {
+      "name": "move_down",
+      "bindings": [
+        { "type": "keyboard", "key": "Key.S" },
+        { "type": "keyboard", "key": "Key.Down" },
+        { "type": "gamepad_axis", "axis": "JoyAxis.LeftY", "axis_value": 1.0 }
+      ]
+    },
+    {
+      "name": "mine",
+      "bindings": [
+        { "type": "mouse", "button": "MouseButton.Left" },
+        { "type": "gamepad_button", "button": "JoyButton.FaceLeft" }
+      ]
+    },
+    {
+      "name": "place",
+      "bindings": [
+        { "type": "mouse", "button": "MouseButton.Right" },
+        { "type": "gamepad_button", "button": "JoyButton.FaceRight" }
+      ]
+    },
+    {
+      "name": "slot_1",
+      "bindings": [{ "type": "keyboard", "key": "Key.Key1" }]
+    },
+    {
+      "name": "slot_2",
+      "bindings": [{ "type": "keyboard", "key": "Key.Key2" }]
+    },
+    {
+      "name": "slot_3",
+      "bindings": [{ "type": "keyboard", "key": "Key.Key3" }]
+    },
+    {
+      "name": "slot_4",
+      "bindings": [{ "type": "keyboard", "key": "Key.Key4" }]
+    },
+    {
+      "name": "slot_5",
+      "bindings": [{ "type": "keyboard", "key": "Key.Key5" }]
+    },
+    {
+      "name": "pause",
+      "bindings": [
+        { "type": "keyboard", "key": "Key.Escape" },
+        { "type": "keyboard", "key": "Key.P" },
+        { "type": "gamepad_button", "button": "JoyButton.Start" }
+      ]
+    }
+  ]
+}
