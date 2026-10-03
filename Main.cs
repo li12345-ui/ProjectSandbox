@@ -11,7 +11,7 @@ namespace ProjectSandbox;
 /// </summary>
 public partial class Main : Node2D
 {
-    private readonly ServiceLocator _services = new();
+    private readonly ServiceLocator _services = ServiceLocator.Instance;
 
     public override void _Ready()
     {
