@@ -13,11 +13,11 @@ public sealed class WorldRenderer : Node2D
     /// <summary>块 ID → 调试纯色（原创配色，避开任何对标作品的标志性色组）。</summary>
     private static readonly System.Collections.Generic.Dictionary<string, Color> DebugColors = new()
     {
-        ["tile_soil_loam"] = new Color(0.55, 0.38, 0.26),   // 壤土：暖棕
-        ["tile_stone_shale"] = new Color(0.42, 0.45, 0.50), // 页岩：冷灰
-        ["tile_bough_timber"] = new Color(0.48, 0.33, 0.20),// 伐木：木褐
-        ["tile_moss_lantern"] = new Color(0.72, 0.85, 0.45),// 苔灯：苔绿
-        ["tile_basalt_firm"] = new Color(0.20, 0.20, 0.24), // 坚玄武岩：深岩黑
+        ["tile_soil_loam"] = new Color(0.55f, 0.38f, 0.26f),   // 壤土：暖棕
+        ["tile_stone_shale"] = new Color(0.42f, 0.45f, 0.50f), // 页岩：冷灰
+        ["tile_bough_timber"] = new Color(0.48f, 0.33f, 0.20f),// 伐木：木褐
+        ["tile_moss_lantern"] = new Color(0.72f, 0.85f, 0.45f),// 苔灯：苔绿
+        ["tile_basalt_firm"] = new Color(0.20f, 0.20f, 0.24f), // 坚玄武岩：深岩黑
     };
 
     private const int TileSize = 16;
