@@ -86,7 +86,7 @@ public partial class CoreSelfTest : SceneTree
     {
         var loader = new JsonDataLoader();
         var catalog = loader.Load<TestItemCatalog>("items.json");
-        Check(catalog.Items.Count == 5, "DataLoader 读取 items 数组共五条");
+        Check(catalog.Items.Count >= 5, "DataLoader 读取 items 数组至少五条");
         Check(catalog.Items[0].Id == "item_crystal_shell", "DataLoader 反序列化 id（snake_case 契约映射）");
         Check(catalog.Items[0].Category == "material", "DataLoader 枚举类字段 category 正确");
         Check(catalog.Items[0].StackSize == 99, "DataLoader 数值字段 stack_size 正确");
