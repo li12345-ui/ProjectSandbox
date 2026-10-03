@@ -1,0 +1,9 @@
+{
+  "items": [
+    {
+      "item_id": "mat_crystal_shell",
+      "display_name": "晶壳碎片",
+      "max_stack": 99
+    }
+  ]
+}
