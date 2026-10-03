@@ -74,7 +74,8 @@ public sealed class SaveSystem
     /// <summary>
     /// 读取存档。
     /// - 文件不存在 → null；
-    /// - format_version ≠ CurrentFormatVersion → 尝试迁移（v1 预留，当前直接拒绝不兼容版本）；
+    /// - format_version &gt; CurrentFormatVersion → 拒绝（未来版本的存档不可被旧客户端读取，防字段静默截断）；
+    /// - format_version &lt; CurrentFormatVersion → 走迁移（对齐 docs/存档格式v1.md L141；当前无历史版本，v1 暂按拒绝处理，RunMigrations 入口预留）；
     /// - 迁移前自动备份原文件为 .bak。
     /// </summary>
     public SaveData? Load(int slotIndex)
@@ -87,15 +88,18 @@ public sealed class SaveSystem
             string json = Godot.FileAccess.GetFileAsString(path);
             using var doc = JsonDocument.Parse(json);
 
-            // 版本号门禁
+            // 版本号门禁（方向性拒绝：只拒未来，不拦历史——历史走迁移）
             int formatVersion = doc.RootElement.TryGetProperty("format_version", out var v) ? v.GetInt32() : 0;
             if (formatVersion == 0) return null; // 无版本号 = 非法存档
 
-            if (formatVersion != CurrentFormatVersion)
+            if (formatVersion > CurrentFormatVersion)
+                return null; // 新版本存档：旧客户端拒绝读取
+
+            if (formatVersion < CurrentFormatVersion)
             {
-                // v1 预留迁移入口——当前只接受 CurrentFormatVersion
-                // 未来：if (formatVersion < CurrentFormatVersion) RunMigrations(path, formatVersion, json);
-                return null; // 版本不兼容
+                // 旧版本存档：迁移入口——当前无历史版本，直接拒绝
+                // 未来：if (RunMigrations(path, formatVersion, json)) ...（备份 .bak 在此处）
+                return null;
             }
 
             return JsonSerializer.Deserialize<SaveData>(json, _jsonOpts);

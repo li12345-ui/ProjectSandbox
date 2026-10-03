@@ -24,6 +24,17 @@ public sealed partial class PlayerMovement : CharacterBody2D
     [Export] public float CoyoteTime { get; set; } = 0.1f;
     [Export] public float JumpBufferTime { get; set; } = 0.1f;
 
+    // -------- 速度：遮蔽基类公开属性为私有 set（审查 P0-状态守卫） --------
+
+    /// <summary>
+    /// 当前速度（px/s）。
+    /// 遮蔽 CharacterBody2D.Velocity 并收窄为私有 set——外部节点无法直接改 .X/.Y，
+    /// 防止绕过重力/土狼时间/跳跃缓冲组成的完整状态机造成状态漂移。
+    /// 本项目碰撞由 CollisionSystem 手动解析（不调 MoveAndSlide），
+    /// CharacterBody2D 原生 Velocity 的物理层语义未被消费，遮蔽无兼容风险。
+    /// </summary>
+    public new Vector2 Velocity { get; private set; }
+
     // -------- AABB 半尺寸（24×40 玩家体，Position = 中心） --------
 
     private readonly Vector2 _halfSize = new(12f, 20f);
