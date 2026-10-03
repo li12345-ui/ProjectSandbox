@@ -17,6 +17,7 @@ public partial class WorldSelfTest : SceneTree
         TestBlockRegistry();
         TestBlockInteraction();
         TestWorldGenerator();
+        TestWorldInputMath();
         GD.Print(_failed == 0
             ? "[tests] World 自测全部通过"
             : $"[tests] World 自测失败 {_failed} 项");
@@ -136,5 +137,20 @@ public partial class WorldSelfTest : SceneTree
 
         // 联动校验：最底行坚玄武岩 minable=false（不可挖的底盘）
         Check(!registry.IsMinable(grid.Get(30, 47)), "最底行块不可挖（坚玄武岩底盘）");
+    }
+
+    private void TestWorldInputMath()
+    {
+        // 输入换算纯函数：世界像素 → 格坐标（Floor 对齐左上原点）
+        Check(WorldInputController.TryWorldToCell(new Vector2(0f, 0f), out var x, out var y) && x == 0 && y == 0,
+            "TryWorldToCell 原点 (0,0) → 格 (0,0)");
+        Check(WorldInputController.TryWorldToCell(new Vector2(35.9f, 27.2f), out x, out y) && x == 2 && y == 1,
+            "TryWorldToCell (35.9,27.2) → 格 (2,1)（Floor 换算）");
+        Check(WorldInputController.TryWorldToCell(new Vector2(1023f, 767f), out x, out y) && x == 63 && y == 47,
+            "TryWorldToCell 右下角内 (1023,767) → 格 (63,47)");
+        Check(!WorldInputController.TryWorldToCell(new Vector2(-1f, 5f), out _, out _),
+            "TryWorldToCell 负 x 拒绝");
+        Check(!WorldInputController.TryWorldToCell(new Vector2(10f, -0.5f), out _, out _),
+            "TryWorldToCell 负 y 拒绝");
     }
 }
