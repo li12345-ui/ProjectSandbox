@@ -85,10 +85,11 @@ public partial class CoreSelfTest : SceneTree
     private void TestDataLoader()
     {
         var loader = new JsonDataLoader();
-        var catalog = loader.Load<TestItemCatalog>("test_items.json");
-        Check(catalog.Items.Count == 1, "DataLoader 读取 items 数组共一条");
-        Check(catalog.Items[0].ItemId == "mat_crystal_shell", "DataLoader 反序列化 item_id（snake_case 映射）");
-        Check(catalog.Items[0].MaxStack == 99, "DataLoader 数值字段正确");
+        var catalog = loader.Load<TestItemCatalog>("items.json");
+        Check(catalog.Items.Count == 5, "DataLoader 读取 items 数组共五条");
+        Check(catalog.Items[0].Id == "item_crystal_shell", "DataLoader 反序列化 id（snake_case 契约映射）");
+        Check(catalog.Items[0].Category == "material", "DataLoader 枚举类字段 category 正确");
+        Check(catalog.Items[0].StackSize == 99, "DataLoader 数值字段 stack_size 正确");
 
         var missingThrows = false;
         try { loader.Load<TestItemCatalog>("not_exists.json"); }
@@ -110,10 +111,16 @@ public partial class CoreSelfTest : SceneTree
 
     private sealed class TestItemEntry
     {
-        [JsonPropertyName("item_id")]
-        public string ItemId { get; set; } = "";
+        [JsonPropertyName("id")]
+        public string Id { get; set; } = "";
 
-        [JsonPropertyName("max_stack")]
-        public int MaxStack { get; set; }
+        [JsonPropertyName("display_name")]
+        public string DisplayName { get; set; } = "";
+
+        [JsonPropertyName("category")]
+        public string Category { get; set; } = "";
+
+        [JsonPropertyName("stack_size")]
+        public int StackSize { get; set; }
     }
 }

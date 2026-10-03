@@ -32,8 +32,8 @@ public partial class Main : Node2D
     /// <summary>管线冒烟：数据读取 + 事件发布订阅各走一次，验证三服务连通。</summary>
     private void SmokeTestServices()
     {
-        var catalog = _services.Get<IDataLoader>().Load<TestItemCatalog>("test_items.json");
-        GD.Print($"[ProjectSandbox] 冒烟：读到 {catalog.Items.Count} 条测试物品");
+        var catalog = _services.Get<IDataLoader>().Load<TestItemCatalog>("items.json");
+        GD.Print($"[ProjectSandbox] 冒烟：读到 {catalog.Items.Count} 条正式物品（首条 {catalog.Items[0].DisplayName}）");
 
         var bus = _services.Get<IEventBus>();
         var received = 0;
@@ -44,7 +44,7 @@ public partial class Main : Node2D
         GD.Print($"[ProjectSandbox] 冒烟：事件回环接收 {received} 次");
     }
 
-    // M0 占位数据模型：仅用于验证数据管线，M1 引入正式物品表后删除
+    // M0 冒烟数据模型（子集）：仅映射冒烟所需字段，M1 引入正式物品模型后删除
     private sealed class TestItemCatalog
     {
         [JsonPropertyName("items")]
@@ -53,8 +53,8 @@ public partial class Main : Node2D
 
     private sealed class TestItemEntry
     {
-        [JsonPropertyName("item_id")]
-        public string ItemId { get; set; } = "";
+        [JsonPropertyName("display_name")]
+        public string DisplayName { get; set; } = "";
     }
 
     private sealed class SmokeEvent { }
