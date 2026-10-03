@@ -20,7 +20,8 @@ public sealed partial class WorldRenderer : Node2D
         ["tile_basalt_firm"] = new Color(0.20f, 0.20f, 0.24f), // 坚玄武岩：深岩黑
     };
 
-    private const int TileSize = 16;
+    /// <summary>图块边长（像素）。渲染与输入换算的单一来源。</summary>
+    public const int TileSize = 16;
 
     private TileMapLayer _layer = null!;
     private BlockGrid _grid = null!;
