@@ -191,7 +191,6 @@ public sealed partial class InventoryUI : Control
     /// <summary>对外：从指定槽扣除物品（供 PlacementSystem 消耗回调注入）。</summary>
     public bool TryConsume(ushort itemId, int count)
     {
-        // 先找同 ID 槽，优先快捷栏
         for (int i = 0; i < SlotsCount; i++)
         {
             if (_inventory.Slots[i].ItemId == itemId && _inventory.Slots[i].Count >= count)
@@ -203,6 +202,45 @@ public sealed partial class InventoryUI : Control
         }
         return false;
     }
+
+    // -------- 存档桥接 --------
+
+    /// <summary>导出所有非空槽位为 SaveInventorySlot 列表。</summary>
+    public System.Collections.Generic.List<SaveSystem.SaveInventorySlot> SaveInventorySlot()
+    {
+        var list = new System.Collections.Generic.List<SaveSystem.SaveInventorySlot>();
+        for (int i = 0; i < SlotsCount; i++)
+        {
+            var stack = _inventory.Slots[i];
+            if (stack.IsEmpty) continue;
+            list.Add(new SaveSystem.SaveInventorySlot
+            {
+                Slot = i,
+                ItemId = ResolveItemIdStr(stack.ItemId),
+                Count = stack.Count,
+            });
+        }
+        return list;
+    }
+
+    /// <summary>从 SaveInventorySlot 列表恢复背包（先清空再填充）。</summary>
+    public void LoadFromSaveData(System.Collections.Generic.List<SaveSystem.SaveInventorySlot> slots)
+    {
+        // 清空所有槽
+        for (int i = 0; i < SlotsCount; i++) _inventory.ClearSlot(i);
+
+        // 填充（当前 item_id 字符串 → ushort itemId 映射未落地，暂存 0 不报错）
+        foreach (var s in slots)
+        {
+            ushort itemId = ResolveItemIdNum(s.ItemId);
+            if (itemId == 0) continue; // 未解析的跳过，不崩
+            _inventory.AddItem(itemId, s.Count, 99);
+        }
+        RefreshAll();
+    }
+
+    private static string ResolveItemIdStr(ushort itemId) => $"item_placeholder_{itemId}"; // 等 ItemRegistry 落地替换
+    private static ushort ResolveItemIdNum(string itemId) => 0; // 等 ItemRegistry 落地替换
 }
 
 /// <summary>

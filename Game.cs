@@ -26,6 +26,8 @@ public partial class Game : Node
     private HealthSystem? _playerHealth;
     private DamageSystem? _damage;
     private InventoryUI? _inventoryUI;
+    private LootSystem? _loot;
+    private EnemyAI? _enemy;
 
     public override void _Ready()
     {
@@ -86,6 +88,7 @@ public partial class Game : Node
 
         // —— 玩家实体 ——
         _player = new PlayerMovement();
+        _player.SetCollisionSystem(_collision); // R1：接入瓦片碰撞（切掉 MoveAndSlide）
         // 起始位置：地表第 12 行（空行底）正上方，中心对齐地图宽度
         _player.Position = new Vector2(
             grid.Width * WorldRenderer.TileSize / 2f,
@@ -120,6 +123,19 @@ public partial class Game : Node
         // —— 生命 + 伤害 ——
         _playerHealth = new HealthSystem(100);
         _damage = new DamageSystem();
+
+        // —— 掉落 ——
+        _loot = new LootSystem(new List<LootSystem.LootTable>()); // 空表，等 loot.json 加载
+
+        // —— 敌人（在地表第 16 行，玩家右侧 100px）——
+        _enemy = new EnemyAI();
+        _enemy.Position = _player.Position + new Vector2(100, 0);
+        _enemy.SetTarget(_player);
+        _enemy.SetCollisionSystem(_collision);
+        _enemy.SetHealthSystem(new HealthSystem(_enemy.MaxHp));
+        _enemy.SetDamageSystem(_damage);
+        _enemy.SetLootSystem(_loot, "enemy_default");
+        AddChild(_enemy);
 
         // —— 存档 ——
         _save = new SaveSystem();
@@ -183,10 +199,7 @@ public partial class Game : Node
 
         // 背包槽位（空槽不落盘）
         if (_inventoryUI != null)
-        {
-            // InventoryUI.TryConsume 可用，但直接访问 _inventory 需内部方法
-            // 当前 SaveInventorySlot 预留，等暴露接口后补全
-        }
+            data.Player.Inventory = _inventoryUI.SaveInventorySlot();
 
         // 时间戳
         data.Header.Seed = 20261003; // 固定种子（占位：等世界种子系统落地后注入）
@@ -209,13 +222,15 @@ public partial class Game : Node
             if (data.Player.MaxHp > 0) _playerHealth.SetMaxHp(data.Player.MaxHp);
             if (data.Player.Hp > 0)
             {
-                // 复活（读档即满血复活）
                 if (_playerHealth.IsDead) _playerHealth.Revive(1f);
-                // 扣到目标 HP（Revive 是满血，再扣）
                 int toDeduct = _playerHealth.MaxHp - data.Player.Hp;
                 if (toDeduct > 0) _playerHealth.TakeDamage(toDeduct);
             }
         }
+
+        // 恢复背包
+        if (_inventoryUI != null && data.Player.Inventory.Count > 0)
+            _inventoryUI.LoadFromSaveData(data.Player.Inventory);
     }
 
     public override void _Notification(int what)

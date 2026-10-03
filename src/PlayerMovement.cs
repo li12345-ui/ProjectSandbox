@@ -1,16 +1,18 @@
 using Godot;
+using ProjectSandbox.World;
 
 namespace ProjectSandbox;
 
 /// <summary>
 /// 玩家移动控制器：水平移动、跳跃、重力、土狼时间、跳跃缓冲。
-/// 继承 CharacterBody2D，_PhysicsProcess 里做输入读取→速度计算→MoveAndSlide 积分。
+/// 继承 CharacterBody2D，但碰撞完全由 CollisionSystem（纯 C# AABB 分轴滑动）处理——
+/// 不再依赖 MoveAndSlide，与 Godot TileSet 碰撞形状解耦。
 ///
-/// 已知限制（风险栏详述）：
-/// (1) 复用 "move_up" action 作跳跃输入——InputMap.json 里没有独立 "jump" action，
-///     本任务约束只改此文件，故权宜复用；将来可改 InputMap.json 时补独立 "jump" 并切换。
-/// (2) 世界 TileMapLayer 尚未配置碰撞形状，MoveAndSlide 会穿透；
-///     本类只负责运动逻辑，碰撞接线留待后续 TileSet collision 配置任务。
+/// 接线：Game.cs 在 TryInitWorld 里创建 CollisionSystem 后，调 SetCollisionSystem 注入。
+/// CollisionSystem 未注入时降级为自由移动（巡逻开阔区域可用）。
+///
+/// AABB 约定：CharacterBody2D.Position = AABB 中心，halfSize = (12, 20)。
+/// CollisionSystem.ResolveCollision 的 position 参数 = 左上角 = Position - halfSize。
 /// </summary>
 public sealed partial class PlayerMovement : CharacterBody2D
 {
@@ -22,10 +24,21 @@ public sealed partial class PlayerMovement : CharacterBody2D
     [Export] public float CoyoteTime { get; set; } = 0.1f;
     [Export] public float JumpBufferTime { get; set; } = 0.1f;
 
+    // -------- AABB 半尺寸（24×40 玩家体，Position = 中心） --------
+
+    private readonly Vector2 _halfSize = new(12f, 20f);
+
+    // -------- 依赖注入 --------
+
+    private CollisionSystem? _collision;
+
+    public void SetCollisionSystem(CollisionSystem collision) => _collision = collision;
+
     // -------- 状态 --------
 
     private float _coyoteTimer;
     private float _jumpBufferTimer;
+    private bool _wasOnGround;
 
     public override void _PhysicsProcess(double delta)
     {
@@ -37,11 +50,15 @@ public sealed partial class PlayerMovement : CharacterBody2D
         var vel = Velocity;
         vel.X = dir * MoveSpeed;
 
-        // 2) 重力累加
-        vel.Y += Gravity * dt;
+        // 2) 重力累加（只在离地时加——土狼窗口内保持着地状态）
+        bool isGrounded = _collision != null ? _collision.IsOnGround(Position - _halfSize, _halfSize) : false;
+        if (isGrounded)
+            vel.Y = 0f;
+        else
+            vel.Y += Gravity * dt;
 
         // 3) 土狼时间：着地时刷新计时器，离地后 CoyoteTime 窗口内仍可跳
-        if (IsOnFloor())
+        if (isGrounded)
             _coyoteTimer = CoyoteTime;
         else
             _coyoteTimer -= dt;
@@ -53,7 +70,7 @@ public sealed partial class PlayerMovement : CharacterBody2D
             _jumpBufferTimer -= dt;
 
         // 5) 跳跃判定：buffer > 0 且（着地 或 土狼窗口内）则触发
-        if (_jumpBufferTimer > 0f && _coyoteTimer > 0f)
+        if (_jumpBufferTimer > 0f && (isGrounded || _coyoteTimer > 0f))
         {
             vel.Y = JumpForce;
             _jumpBufferTimer = 0f;
@@ -62,7 +79,13 @@ public sealed partial class PlayerMovement : CharacterBody2D
 
         Velocity = vel;
 
-        // 6) 位置积分
-        MoveAndSlide();
+        // 6) 位置积分 + 碰撞解析
+        var topLeft = Position - _halfSize; // AABB 左上角
+        var correctedTopLeft = _collision != null
+            ? _collision.ResolveCollision(topLeft, _halfSize, Velocity, dt)
+            : topLeft + Velocity * dt;
+        Position = correctedTopLeft + _halfSize; // 转回 CharacterBody2D.Position（中心）
+
+        _wasOnGround = isGrounded;
     }
 }
