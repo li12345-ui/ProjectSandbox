@@ -55,6 +55,11 @@ public partial class Game : Node
             return;
 
         var loader = ServiceLocator.Instance.Get<IDataLoader>();
+
+        // 输入服务必须在任何 WorldInputController 之前初始化——
+        // 否则 IsActionPressed 查询未注册 action 会触发引擎报错（经验 #301911）
+        InputService.Instance.Initialize(loader);
+
         var registry = new BlockRegistry(loader);
         var generator = new WorldGenerator(loader, registry);
         var grid = generator.Generate();

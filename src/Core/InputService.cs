@@ -29,6 +29,7 @@ public sealed class InputService
     {
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+        Converters = { new JsonStringEnumConverter() },
     };
 
     /// <summary>当前生效的 action 配置（重映射 UI 接线后需同步更新）。</summary>
@@ -110,34 +111,39 @@ public sealed class InputService
 
     private static InputEvent? BuildInputEvent(InputBinding binding)
     {
+        // 用字符串匹配而非 enum——JsonDataLoader 走默认 Deserialize，
+        // enum 按整数解析，"keyboard" 等字符串无法匹配；string 类型天生兼容
         switch (binding.Type)
         {
-            case BindingType.Keyboard:
+            case "keyboard":
                 if (binding.Key == null) return null;
-                if (Enum.TryParse<Key>(binding.Key, out var key))
+                if (Enum.TryParse<Key>(StripPrefix(binding.Key, "Key."), out var key))
                     return new InputEventKey { Keycode = key };
                 break;
 
-            case BindingType.Mouse:
+            case "mouse":
                 if (binding.Button == null) return null;
-                if (Enum.TryParse<MouseButton>(binding.Button, out var mb))
+                if (Enum.TryParse<MouseButton>(StripPrefix(binding.Button, "MouseButton."), out var mb))
                     return new InputEventMouseButton { ButtonIndex = mb };
                 break;
 
-            case BindingType.GamepadButton:
+            case "gamepad_button":
                 if (binding.Button == null) return null;
-                if (Enum.TryParse<JoyButton>(binding.Button, out var jb))
+                if (Enum.TryParse<JoyButton>(StripPrefix(binding.Button, "JoyButton."), out var jb))
                     return new InputEventJoypadButton { ButtonIndex = jb };
                 break;
 
-            case BindingType.GamepadAxis:
+            case "gamepad_axis":
                 if (binding.Axis == null) return null;
-                if (Enum.TryParse<JoyAxis>(binding.Axis, out var ja))
+                if (Enum.TryParse<JoyAxis>(StripPrefix(binding.Axis, "JoyAxis."), out var ja))
                     return new InputEventJoypadMotion { Axis = ja, AxisValue = (float?)binding.AxisValue ?? 1f };
                 break;
         }
         return null;
     }
+
+    private static string StripPrefix(string s, string prefix)
+        => s.StartsWith(prefix, StringComparison.Ordinal) ? s.Substring(prefix.Length) : s;
 
     // -------- 私有：user:// 存档 → 合并覆盖默认 --------
 
@@ -165,8 +171,6 @@ public sealed class InputService
 
 // -------- 数据模型（internal：仅供 InputService 内部 JSON 反序列化） --------
 
-internal enum BindingType { Keyboard, Mouse, GamepadButton, GamepadAxis }
-
 internal sealed class InputMapCatalog
 {
     [JsonPropertyName("version")]
@@ -188,7 +192,7 @@ internal sealed class InputAction
 internal sealed class InputBinding
 {
     [JsonPropertyName("type")]
-    public BindingType Type { get; set; }
+    public string Type { get; set; } = "";
 
     [JsonPropertyName("key")]
     public string? Key { get; set; }
@@ -205,10 +209,10 @@ internal sealed class InputBinding
     public override string ToString()
         => Type switch
         {
-            BindingType.Keyboard => $"key={Key}",
-            BindingType.Mouse => $"mouse={Button}",
-            BindingType.GamepadButton => $"gpbtn={Button}",
-            BindingType.GamepadAxis => $"gpaxis={Axis}({AxisValue})",
-            _ => "?"
+            "keyboard" => $"key={Key}",
+            "mouse" => $"mouse={Button}",
+            "gamepad_button" => $"gpbtn={Button}",
+            "gamepad_axis" => $"gpaxis={Axis}({AxisValue})",
+            _ => $"type={Type}"
         };
 }

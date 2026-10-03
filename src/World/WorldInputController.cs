@@ -4,9 +4,10 @@ using Godot;
 namespace ProjectSandbox.World;
 
 /// <summary>
-/// 世界输入控制器（M1 调试版）：左键挖掘、右键放置、数字键选块。
-/// 规则全部经 BlockInteraction，本类只做「输入事件 → 格坐标 → 规则调用 → 渲染同步」的搬运；
-/// 快捷栏为 CanvasLayer 上的调试 Label 占位，正式 UI 快捷栏另开任务。
+/// 世界输入控制器：左键挖掘、右键放置、数字键选块。
+/// 所有输入经 Godot.InputMap action 查询（InputService 注册），天然合并键鼠+手柄；
+/// IsActionJustPressed 做边沿检测，比手动维护 Pressed 状态干净。
+/// 规则全部经 BlockInteraction，本类只做「action 触发 → 格坐标 → 规则调用 → 渲染同步」的搬运。
 /// </summary>
 public sealed partial class WorldInputController : Node2D
 {
@@ -36,35 +37,32 @@ public sealed partial class WorldInputController : Node2D
         AddChild(hud);
     }
 
-    public override void _UnhandledInput(InputEvent @event)
+    public override void _Process(double delta)
     {
-        // 数字键 1~9 选块：槽位号即块索引（注册表索引从 1 起），超出块数量忽略
-        if (@event is InputEventKey { Pressed: true, Echo: false } key)
+        // 选块：slot_1 ~ slot_5 对应注册表索引 1~5（块数=5）
+        for (int i = 1; i <= _registry.Count; i++)
         {
-            var code = (int)key.Keycode;
-            var slot = code - (int)Key.Key1 + 1;
-            if (code >= (int)Key.Key1 && code <= (int)Key.Key9 && slot <= _registry.Count)
+            if (Input.IsActionJustPressed($"slot_{i}"))
             {
-                SelectedIndex = (ushort)slot;
+                SelectedIndex = (ushort)i;
                 _hotbar.Text = HotbarText();
+                break;
             }
-            return;
         }
 
-        if (@event is not InputEventMouseButton { Pressed: true } mb) return;
+        // 挖/放：经 InputMap action 查询，天然合并键鼠+手柄
+        var hasMine = Input.IsActionJustPressed("mine");
+        var hasPlace = Input.IsActionJustPressed("place");
+        if (!hasMine && !hasPlace) return;
 
         var inGrid = TryWorldToCell(GetGlobalMousePosition(), out var x, out var y);
         if (!inGrid) return;
 
-        switch (mb.ButtonIndex)
-        {
-            case MouseButton.Left when _interaction.Mine(x, y):
-                _renderer.UpdateCell(x, y); // 挖掘成功 → 同步单格
-                break;
-            case MouseButton.Right when SelectedIndex != 0 && _interaction.Place(x, y, SelectedIndex):
-                _renderer.UpdateCell(x, y); // 放置成功 → 同步单格
-                break;
-        }
+        if (hasMine && _interaction.Mine(x, y))
+            _renderer.UpdateCell(x, y);
+
+        if (hasPlace && SelectedIndex != 0 && _interaction.Place(x, y, SelectedIndex))
+            _renderer.UpdateCell(x, y);
     }
 
     /// <summary>
