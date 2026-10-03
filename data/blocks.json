@@ -1,0 +1,39 @@
+{
+  "blocks": [
+    {
+      "id": "tile_soil_loam",
+      "display_name": "壤土块",
+      "solid": true,
+      "minable": true,
+      "hardness": 1
+    },
+    {
+      "id": "tile_stone_shale",
+      "display_name": "页岩块",
+      "solid": true,
+      "minable": true,
+      "hardness": 2
+    },
+    {
+      "id": "tile_bough_timber",
+      "display_name": "伐木块",
+      "solid": true,
+      "minable": true,
+      "hardness": 2
+    },
+    {
+      "id": "tile_moss_lantern",
+      "display_name": "苔灯",
+      "solid": false,
+      "minable": true,
+      "hardness": 1
+    },
+    {
+      "id": "tile_basalt_firm",
+      "display_name": "坚玄武岩",
+      "solid": true,
+      "minable": false,
+      "hardness": 255
+    }
+  ]
+}

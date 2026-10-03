@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "block.schema.json",
+  "title": "Block",
+  "type": "object",
+  "required": ["id", "display_name", "solid", "minable"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^tile_[a-z0-9_]+$" },
+    "display_name": { "type": "string", "minLength": 1 },
+    "solid": { "type": "boolean", "default": true, "description": "是否阻挡通行（用于后续碰撞与生成）" },
+    "minable": { "type": "boolean", "default": true, "description": "是否可被挖掘（false = 场景底板类不可破坏块）" },
+    "hardness": { "type": "integer", "minimum": 1, "maximum": 255, "description": "挖掘硬度基准值；工具档位联动在工具系统落地后接入" }
+  }
+}
