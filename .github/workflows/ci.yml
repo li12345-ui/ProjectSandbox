@@ -73,15 +73,12 @@ jobs:
           DOTNET_CLI_HOME: /tmp/dotnet  # 避免 runner 根目录写权限问题
           DOTNET_NOLOGO: "true"          # 减少日志噪音
 
-      # 6. 运行 tests/ 下的 Godot 最小自测脚本（当前占位，等补测试后替换）
+      # 6. 运行 tests/ 下的 Core 最小自测（断言失败以退出码 1 结束，使本步失败）
       - name: Run tests
         run: |
-          echo "tests/ 目录待补测试脚本，此处为占位逻辑"
-          # 后续替换为：
-          # find tests -maxdepth 2 -name "*.cs" -type f | while read -r test_script; do
-          #   echo "Running $test_script..."
-          #   godot --headless --script "$test_script" --quit || exit 1
-          # done
+          godot --headless --path . --script res://tests/CoreSelfTest.cs --quit
+        env:
+          GODOT_DISABLE_CRASH_HANDLER: "1"
 
       # 7. 冒烟测试：实际加载主场景（非仅打开项目管理器）
       - name: Smoke test (load Main.tscn)
