@@ -8,7 +8,7 @@ namespace ProjectSandbox.World;
 /// 占位纹理为运行时程序生成的 16×16 纯色块（原创调试用，正式美术按像素资产规范另开任务替换）；
 /// 调试配色与块 ID 一一对应，仅服务"可见性验证"，不属于游戏内容数值。
 /// </summary>
-public sealed class WorldRenderer : Node2D
+public sealed partial class WorldRenderer : Node2D
 {
     /// <summary>块 ID → 调试纯色（原创配色，避开任何对标作品的标志性色组）。</summary>
     private static readonly System.Collections.Generic.Dictionary<string, Color> DebugColors = new()
