@@ -1,0 +1,43 @@
+{
+  "items": [
+    {
+      "id": "item_crystal_shell",
+      "display_name": "晶壳碎片",
+      "category": "material",
+      "stack_size": 99,
+      "rarity": "common"
+    },
+    {
+      "id": "item_basalt_pickaxe",
+      "display_name": "玄武镐",
+      "category": "tool",
+      "rarity": "common",
+      "durability": 150,
+      "mining_tier": 1,
+      "damage": 8
+    },
+    {
+      "id": "item_moss_lantern",
+      "display_name": "苔灯",
+      "category": "placeable",
+      "rarity": "uncommon",
+      "place": "tile_moss_lantern"
+    },
+    {
+      "id": "item_ember_berry",
+      "display_name": "火种莓",
+      "category": "consumable",
+      "rarity": "common",
+      "stack_size": 30,
+      "use_effect": "consumable_heal_1"
+    },
+    {
+      "id": "item_rime_sword",
+      "display_name": "霜棱剑",
+      "category": "weapon",
+      "rarity": "rare",
+      "durability": 200,
+      "damage": 18
+    }
+  ]
+}
