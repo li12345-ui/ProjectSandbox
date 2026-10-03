@@ -6,5 +6,39 @@
     { "block": "tile_soil_loam", "thickness": 4 },
     { "block": "tile_stone_shale", "thickness": 10 },
     { "block": "tile_basalt_firm", "thickness": -1 }
+  ],
+  "seed": 0,
+  "terrain": {
+    "octaves": 4,
+    "persistence": 0.5,
+    "lacunarity": 2.0,
+    "base_height": 18,
+    "height_amp": 4,
+    "sample_freq": 0.05,
+    "basalt_thickness": 4,
+    "basalt_block": "tile_basalt_firm"
+  },
+  "biomes": {
+    "cell_count": 8,
+    "blend_width": 2,
+    "defs": [
+      { "id": "mosswood", "surface": "tile_soil_loam", "sub": "tile_stone_shale", "weight": 3 },
+      { "id": "emberwaste", "surface": "tile_soil_ember", "sub": "tile_stone_shale", "weight": 2 },
+      { "id": "rimeplateau", "surface": "tile_soil_rime", "sub": "tile_stone_shale", "weight": 2 },
+      { "id": "shaleslope", "surface": "tile_stone_shale", "sub": "tile_stone_shale", "weight": 2 },
+      { "id": "tideflat", "surface": "tile_soil_tide", "sub": "tile_stone_shale", "weight": 1 }
+    ]
+  },
+  "caves": {
+    "density": 0.45,
+    "iterations": 4,
+    "wall_threshold": 5,
+    "min_room": 8
+  },
+  "veins": [
+    { "ore": "tile_ore_iron", "depth_band": [23, 30], "anchor_per_col": 0.05, "walk_steps": [20, 40], "cluster": 3, "noise_threshold": 0.62 },
+    { "ore": "tile_ore_crystal", "depth_band": [25, 34], "anchor_per_col": 0.04, "walk_steps": [24, 44], "cluster": 2, "noise_threshold": 0.62 },
+    { "ore": "tile_ore_amber", "depth_band": [24, 32], "anchor_per_col": 0.03, "walk_steps": [20, 36], "cluster": 2, "noise_threshold": 0.62 },
+    { "ore": "tile_ore_ember", "depth_band": [26, 36], "anchor_per_col": 0.04, "walk_steps": [16, 32], "cluster": 3, "noise_threshold": 0.62 }
   ]
 }
