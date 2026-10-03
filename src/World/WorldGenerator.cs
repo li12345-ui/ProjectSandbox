@@ -35,11 +35,12 @@ public sealed class WorldGenerator
         {
             var layer = _def.Layers[i];
             var isLast = i == _def.Layers.Count - 1;
+            // 先解析索引再处理 -1 分支——否则末层索引留 0（空块），底层会被挖空
+            _layerIndices[i] = _registry.GetIndex(layer.Block);
             if (isLast && layer.Thickness == -1) continue; // 末层 -1 = 填满剩余
             if (layer.Thickness <= 0)
                 throw new InvalidOperationException($"第 {i + 1} 层厚度非法：{layer.Thickness}（仅末层可用 -1 表剩余）");
             fixedRows += layer.Thickness;
-            _layerIndices[i] = _registry.GetIndex(layer.Block);
         }
         if (_def.Layers[^1].Thickness != -1)
             throw new InvalidOperationException("末层厚度须为 -1（填满剩余行），避免高度改后出现未填充区");
