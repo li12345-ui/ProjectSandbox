@@ -1,0 +1,10 @@
+{
+  "width": 64,
+  "height": 48,
+  "air_rows": 12,
+  "layers": [
+    { "block": "tile_soil_loam", "thickness": 4 },
+    { "block": "tile_stone_shale", "thickness": 10 },
+    { "block": "tile_basalt_firm", "thickness": -1 }
+  ]
+}
