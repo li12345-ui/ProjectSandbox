@@ -39,6 +39,9 @@ public sealed partial class PlayerMovement : CharacterBody2D
 
     private readonly Vector2 _halfSize = new(12f, 20f);
 
+    /// <summary>碰撞 AABB 半尺寸（只读）。供 Game 出生点定位/读档夹紧复用，避免半宽半高魔法数扩散。</summary>
+    public Vector2 HalfSize => _halfSize;
+
     // -------- 依赖注入 --------
 
     private CollisionSystem? _collision;

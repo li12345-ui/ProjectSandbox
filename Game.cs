@@ -17,6 +17,7 @@ public partial class Game : Node
 
     private IEventBus? _eventBus;
     private bool _worldReady;
+    private BlockGrid? _grid; // 出生点查找 / 读档夹紧的地表数据源（TryInitWorld 时赋值）
 
     // -------- 接线后的系统实例 --------
     private CollisionSystem? _collision;
@@ -77,6 +78,7 @@ public partial class Game : Node
         var registry = new BlockRegistry(loader);
         var generator = new WorldGenerator(loader, registry);
         var grid = generator.Generate();
+        _grid = grid;
 
         // 调试渲染器（TileMapLayer 占位纯色图集）
         var renderer = new WorldRenderer();
@@ -89,15 +91,21 @@ public partial class Game : Node
         // —— 玩家实体 ——
         _player = new PlayerMovement();
         _player.SetCollisionSystem(_collision); // R1：接入瓦片碰撞（切掉 MoveAndSlide）
-        // 起始位置：地表第 12 行（空行底）正上方，中心对齐地图宽度
+        // 出生点：中心列地表查找——管线模式地形起伏后不再硬编码第 11 行（防埋土）
+        int spawnX = grid.Width / 2;
+        int spawnSurface = FindSurfaceRow(grid, spawnX);
         _player.Position = new Vector2(
-            grid.Width * WorldRenderer.TileSize / 2f,
-            WorldRenderer.TileSize * 11 - 40 // 站在第 12 行空块底部
+            spawnX * WorldRenderer.TileSize + WorldRenderer.TileSize / 2f,
+            spawnSurface * WorldRenderer.TileSize - _player.HalfSize.Y
         );
         // 玩家碰撞形状（CharacterBody2D 必须有 CollisionShape2D 才能 MoveAndSlide）
         var playerShape = new CollisionShape2D();
         playerShape.Shape = new RectangleShape2D { Size = new Vector2(24, 40) };
         _player.AddChild(playerShape);
+        // 玩家视觉占位：青蓝色 24×40 矩形（后续替换像素精灵）
+        var playerVisual = new ColorRect { Color = new Color(0.3f, 0.7f, 1f), Size = new Vector2(24, 40) };
+        playerVisual.Position = new Vector2(-12, -20); // CharacterBody2D.Position = 中心
+        _player.AddChild(playerVisual);
         AddChild(_player);
 
         // —— 相机（替换 WorldCamera）——
@@ -135,6 +143,10 @@ public partial class Game : Node
         _enemy.SetHealthSystem(new HealthSystem(_enemy.MaxHp));
         _enemy.SetDamageSystem(_damage);
         _enemy.SetLootSystem(_loot, "enemy_default");
+        // 敌人视觉占位：暗红色 16×24 矩形（后续替换像素精灵）
+        var enemyVisual = new ColorRect { Color = new Color(0.8f, 0.2f, 0.2f), Size = new Vector2(16, 24) };
+        enemyVisual.Position = new Vector2(-8, -12); // Node2D.Position = 中心
+        _enemy.AddChild(enemyVisual);
         AddChild(_enemy);
 
         // —— 存档 ——
@@ -222,6 +234,7 @@ public partial class Game : Node
         if (_player != null && data.Player.Pos != null && data.Player.Pos.Length >= 2)
         {
             _player.Position = new Vector2((float)data.Player.Pos[0], (float)data.Player.Pos[1]);
+            ClampPlayerToWorld(_player); // R2：读档地面夹紧（地形起伏后旧位置可能埋土）
         }
 
         // 恢复 HP（静默：不触发 OnRevived/OnDamaged——存档加载不计入统计事件）
@@ -234,6 +247,40 @@ public partial class Game : Node
         // 恢复背包
         if (_inventoryUI != null && data.Player.Inventory.Count > 0)
             _inventoryUI.LoadFromSaveData(data.Player.Inventory);
+    }
+
+    // -------- 位置夹紧（阶段 4：防埋土） --------
+
+    /// <summary>
+    /// 读档地面夹紧：X 夹回世界边界内，脚底陷入地表下时提回地表上方（防埋土）。
+    /// 悬空场景不做处理——交给重力 + CollisionSystem 自然坠回（设计文档 §10-1）。
+    /// </summary>
+    private void ClampPlayerToWorld(PlayerMovement player)
+    {
+        if (_grid == null) return;
+        var hs = player.HalfSize;
+        float worldW = _grid.Width * WorldRenderer.TileSize;
+        var before = player.Position;
+
+        var clamped = player.Position;
+        clamped.X = Mathf.Clamp(clamped.X, hs.X, worldW - hs.X);
+        int col = Mathf.Clamp((int)(clamped.X / WorldRenderer.TileSize), 0, _grid.Width - 1);
+        int surface = FindSurfaceRow(_grid, col);
+        float surfaceTop = surface * WorldRenderer.TileSize;
+        if (clamped.Y + hs.Y > surfaceTop)
+            clamped.Y = surfaceTop - hs.Y;
+
+        player.Position = clamped;
+        if (clamped != before)
+            GD.Print($"[Game] 读档位置夹紧：({before.X:F0},{before.Y:F0}) → ({clamped.X:F0},{clamped.Y:F0}) 地表行={surface}");
+    }
+
+    /// <summary>某列首个非空行的行号（地表行）；整列全空返回 0（世界底盘实心，正常不触发）。</summary>
+    private static int FindSurfaceRow(BlockGrid grid, int x)
+    {
+        for (int y = 0; y < grid.Height; y++)
+            if (grid.Get(x, y) != 0) return y;
+        return 0;
     }
 
     public override void _Notification(int what)
