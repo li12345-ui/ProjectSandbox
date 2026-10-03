@@ -302,6 +302,17 @@ public partial class VerticalSliceSelfTest : SceneTree
         dmg.ApplyDamage(hp3, 10, 50); // 防御高于伤害 → 最低 1 点
         Check(hp3.CurrentHp == 29, "敌人：防御超伤时保底 1 点");
         Check(!deathFired, "敌人：未死亡时 OnDeath 不触发");
+
+        // SetHpSilently 契约：不触发任何事件，同步维护 IsDead/无敌帧
+        bool anyEvent = false;
+        var hpSilent = new HealthSystem(50) { IFrameDuration = 0.3f };
+        hpSilent.OnDamaged += (_, _) => anyEvent = true;
+        hpSilent.OnRevived += _ => anyEvent = true;
+        hpSilent.OnDeath += _ => anyEvent = true;
+        hpSilent.SetHpSilently(20);
+        Check(!anyEvent && hpSilent.CurrentHp == 20 && !hpSilent.IsDead, "敌人：SetHpSilently 无事件触发且 HP 正确");
+        hpSilent.SetHpSilently(0);
+        Check(hpSilent.IsDead, "敌人：SetHpSilently(0) 同步设 IsDead=true");
     }
 
     // ================================================================

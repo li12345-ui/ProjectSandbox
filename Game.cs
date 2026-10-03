@@ -140,6 +140,14 @@ public partial class Game : Node
         // —— 存档 ——
         _save = new SaveSystem();
 
+        // 注入完整性断言（审查 P1-耦合防线：任一 setter 漏调此处即炸）
+        System.Diagnostics.Debug.Assert(_collision != null, "TryInitWorld：CollisionSystem 未注入");
+        System.Diagnostics.Debug.Assert(_player != null, "TryInitWorld：PlayerMovement 未创建");
+        System.Diagnostics.Debug.Assert(_camera != null, "TryInitWorld：CameraController 未创建");
+        System.Diagnostics.Debug.Assert(_playerHealth != null, "TryInitWorld：玩家 HealthSystem 未创建");
+        System.Diagnostics.Debug.Assert(_damage != null, "TryInitWorld：DamageSystem 未创建");
+        System.Diagnostics.Debug.Assert(_inventoryUI != null, "TryInitWorld：InventoryUI 未创建");
+
         _worldReady = true;
         GD.Print($"[Game] 世界已生成并挂载全部系统：{generator.Width}x{generator.Height}");
     }
@@ -216,16 +224,11 @@ public partial class Game : Node
             _player.Position = new Vector2((float)data.Player.Pos[0], (float)data.Player.Pos[1]);
         }
 
-        // 恢复 HP
+        // 恢复 HP（静默：不触发 OnRevived/OnDamaged——存档加载不计入统计事件）
         if (_playerHealth != null)
         {
             if (data.Player.MaxHp > 0) _playerHealth.SetMaxHp(data.Player.MaxHp);
-            if (data.Player.Hp > 0)
-            {
-                if (_playerHealth.IsDead) _playerHealth.Revive(1f);
-                int toDeduct = _playerHealth.MaxHp - data.Player.Hp;
-                if (toDeduct > 0) _playerHealth.TakeDamage(toDeduct);
-            }
+            _playerHealth.SetHpSilently(data.Player.Hp);
         }
 
         // 恢复背包

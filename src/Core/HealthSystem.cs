@@ -105,6 +105,18 @@ public sealed class HealthSystem
             _iFrameTimer = Math.Max(0f, _iFrameTimer - dt);
     }
 
+    /// <summary>
+    /// 静默设置血量：存档桥接专用，不触发任何事件（OnDamaged/OnRevived/OnDeath 均静默）。
+    /// 与 Revive/TakeDamage/Heal 的核心差异：存档加载不应计入复活次数、受伤次数等统计。
+    /// 同步维护 _isDead（HP=0 则 dead）和 _iFrameTimer（清零保证加载后立即可被正常攻击）。
+    /// </summary>
+    public void SetHpSilently(int hp)
+    {
+        _currentHp = Math.Clamp(hp, 0, _maxHp);
+        _isDead = _currentHp <= 0;
+        _iFrameTimer = 0f;
+    }
+
     /// <summary>修改最大血量（升级/装备）；当前血量超出则钳制到新 Max。</summary>
     public void SetMaxHp(int newMax)
     {

@@ -62,8 +62,13 @@ public sealed partial class DiggingSystem : Node2D
 
     public void SetOrigin(int cellX, int cellY)
     {
-        _originCell = new Vector2I(cellX, cellY);
-        QueueRedraw();
+        var newOrigin = new Vector2I(cellX, cellY);
+        if (newOrigin != _originCell)
+        {
+            _originCell = newOrigin;
+            _digProgress = 0f; // 玩家移动导致 origin 变化时重置进度——防跨范围挖穿（审查 P1-状态漂移）
+            QueueRedraw();
+        }
     }
 
     public void SetMinePressed(bool pressed) => _minePressed = pressed;

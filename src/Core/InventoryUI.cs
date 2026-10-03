@@ -223,18 +223,27 @@ public sealed partial class InventoryUI : Control
         return list;
     }
 
-    /// <summary>从 SaveInventorySlot 列表恢复背包（先清空再填充）。</summary>
+    /// <summary>
+    /// 从 SaveInventorySlot 列表恢复背包：按 slot 索引逐槽原位置还原。
+    /// 三重防御（审查 P2-状态漂移）：
+    /// - slot 索引越界 → 跳过（脏数据）
+    /// - itemId==0 → 跳过（ItemRegistry 占位，合法物品不会映射到 0）
+    /// - count 超 maxStack → 钳制到 maxStack（存档数据损坏）
+    /// 不使用 AddItem——它按自身堆叠逻辑重新分布槽位，与存档 slot 索引语义冲突。
+    /// </summary>
     public void LoadFromSaveData(System.Collections.Generic.List<SaveSystem.SaveInventorySlot> slots)
     {
-        // 清空所有槽
         for (int i = 0; i < SlotsCount; i++) _inventory.ClearSlot(i);
 
-        // 填充（当前 item_id 字符串 → ushort itemId 映射未落地，暂存 0 不报错）
         foreach (var s in slots)
         {
+            if (s.Slot < 0 || s.Slot >= SlotsCount) continue; // 越界防御
             ushort itemId = ResolveItemIdNum(s.ItemId);
-            if (itemId == 0) continue; // 未解析的跳过，不崩
-            _inventory.AddItem(itemId, s.Count, 99);
+            if (itemId == 0) continue;                        // 未解析防御
+            int maxStack = 99;                                // ItemRegistry 落地后替换
+            int safeCount = Math.Min(s.Count, maxStack);      // 超量防御
+            if (safeCount <= 0) continue;
+            _inventory.GetStack(s.Slot) = new Inventory.ItemStack(itemId, safeCount, maxStack);
         }
         RefreshAll();
     }

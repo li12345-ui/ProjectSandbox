@@ -75,7 +75,8 @@ public sealed partial class EnemyAI : Node2D
         }
 
         _state = AIState.Dead;
-        QueueFree();
+        // 延迟到帧尾销毁——避免死亡回调嵌套释放自身导致 LootSystem 后续访问对象异常（审查 P1-耦合）
+        Callable.From(QueueFree).CallDeferred();
     }
 
     // -------- 公开接口（HealthSystem 委托） --------
