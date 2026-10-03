@@ -48,12 +48,13 @@ jobs:
           godot --version  # 打印版本验证安装成功
           find /opt/godot -maxdepth 3 -type d -name 'GodotSharp'  # 确认 C# 支持就绪
 
-      # 3. Setup .NET SDK 10（2025 LTS，Godot 4.5+ 要求 .NET 8+，"or later" 含 9/10）
+      # 3. Setup .NET SDK 10（2025 LTS，Godot 4.5+ 要求 .NET 8+，"or later" 含 9/10；
+      #    不写 dotnet-quality，走 action 默认 GA 正式版通道——"stable" 不是其支持的取值，
+      #    上轮已被 runner 校验报错拒绝）
       - name: Setup .NET SDK 10
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.x"
-          dotnet-quality: "stable"
 
       # 4. 校验 .sln/.csproj 是否存在（Godot headless 不保证能生成 .NET 解决方案，
       #     用户首次使用须在本地 Godot .NET 编辑器里打开一次项目，让编辑器自动生成后提交）
