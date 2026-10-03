@@ -1,5 +1,6 @@
 using Godot;
 using ProjectSandbox.Core;
+using ProjectSandbox.World;
 
 namespace ProjectSandbox;
 
@@ -15,6 +16,7 @@ public partial class Game : Node
     public ProjectSandbox.Core.MainLoop Loop { get; } = new();
 
     private IEventBus? _eventBus;
+    private bool _worldReady;
 
     public override void _Ready()
     {
@@ -28,6 +30,8 @@ public partial class Game : Node
         if (_eventBus == null && ServiceLocator.IsRegistered<IEventBus>())
             _eventBus = ServiceLocator.Instance.Get<IEventBus>();
 
+        TryInitWorld();
+
         // 1) 推进固定步长（内部含 accumulator + 上限截断 + 帧耗时采样 + FPS 滚动平均）
         Loop.Step(delta);
 
@@ -39,6 +43,25 @@ public partial class Game : Node
             frameDurationNs: Loop.FrameDurationNs,
             isPaused: Loop.IsPaused
         ));
+    }
+
+    /// <summary>
+    /// 惰性构建世界：注册表 → 生成器 → 网格 → 调试渲染器（挂为本节点子级）。
+    /// 与事件总线同样走"每帧试探直到服务就绪"的补偿模式，构建成功后置位短路。
+    /// </summary>
+    private void TryInitWorld()
+    {
+        if (_worldReady || !ServiceLocator.IsRegistered<IDataLoader>())
+            return;
+
+        var loader = ServiceLocator.Instance.Get<IDataLoader>();
+        var registry = new BlockRegistry(loader);
+        var generator = new WorldGenerator(loader, registry);
+        var renderer = new WorldRenderer();
+        renderer.Initialize(generator.Generate(), registry);
+        AddChild(renderer);
+        _worldReady = true;
+        GD.Print($"[Game] 世界已生成并挂载渲染：{generator.Width}x{generator.Height}");
     }
 
     public override void _Notification(int what)

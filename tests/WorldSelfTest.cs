@@ -16,6 +16,7 @@ public partial class WorldSelfTest : SceneTree
         TestBlockGrid();
         TestBlockRegistry();
         TestBlockInteraction();
+        TestWorldGenerator();
         GD.Print(_failed == 0
             ? "[tests] World 自测全部通过"
             : $"[tests] World 自测失败 {_failed} 项");
@@ -105,5 +106,35 @@ public partial class WorldSelfTest : SceneTree
         Check(!interact.Place(3, 0, soil), "向非空格放置返回 false");
         Check(!interact.Place(4, 0, soil), "越界放置返回 false");
         Check(!interact.Place(0, 0, BlockGrid.EmptyIndex), "放置空索引返回 false");
+    }
+
+    private void TestWorldGenerator()
+    {
+        var loader = new JsonDataLoader();
+        var registry = new BlockRegistry(loader);
+        var generator = new WorldGenerator(loader, registry);
+        var grid = generator.Generate();
+
+        Check(grid.Width == 64 && grid.Height == 48, "生成器产出 64x48 网格");
+        Check(grid.Get(0, 0) == BlockGrid.EmptyIndex && grid.Get(63, 11) == BlockGrid.EmptyIndex, "空行区（0~11 行）为空块");
+
+        var soil = registry.GetIndex("tile_soil_loam");
+        var shale = registry.GetIndex("tile_stone_shale");
+        var basalt = registry.GetIndex("tile_basalt_firm");
+
+        Check(grid.Get(0, 12) == soil && grid.Get(63, 15) == soil, "壤土层位于 12~15 行");
+        Check(grid.Get(0, 16) == shale && grid.Get(63, 25) == shale, "页岩层位于 16~25 行");
+        Check(grid.Get(0, 26) == basalt && grid.Get(63, 47) == basalt, "坚玄武岩层位于 26~47 行直至底部");
+
+        // 确定性：同参数两次生成逐格一致
+        var again = generator.Generate();
+        var identical = true;
+        for (int y = 0; y < grid.Height && identical; y++)
+            for (int x = 0; x < grid.Width && identical; x++)
+                identical = grid.Get(x, y) == again.Get(x, y);
+        Check(identical, "同参数两次生成逐格一致（确定性）");
+
+        // 联动校验：最底行坚玄武岩 minable=false（不可挖的底盘）
+        Check(!registry.IsMinable(grid.Get(30, 47)), "最底行块不可挖（坚玄武岩底盘）");
     }
 }
