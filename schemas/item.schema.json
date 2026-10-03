@@ -12,11 +12,11 @@
     "stack_size": { "type": "integer", "minimum": 1, "maximum": 999, "default": 99 },
     "rarity": { "enum": ["common", "uncommon", "rare", "epic", "legendary"], "default": "common" },
     "durability": { "type": "integer", "minimum": 0 },
-    "mining_tier": { "type": "integer", "minimum": 0, "description": "鎸栨帢璇ョ墿鍧楁墍闇€鐨勫伐鍏锋。浣嶉棬妲? },
+    "mining_tier": { "type": "integer", "minimum": 0, "description": "挖掘该物块所需的工具档位门槛" },
     "damage": { "type": "integer", "minimum": 0 },
     "stats": { "$ref": "#/$defs/statsBlock" },
-    "place": { "type": "string", "pattern": "^tile_[a-z0-9_]+$", "description": "鍙斁缃墿鍧?id锛坧laceable 绫伙級" },
-    "use_effect": { "type": "string", "description": "浣跨敤鏁堟灉鑴氭湰娉ㄥ唽鍚嶏紝纭鍒欏疄鐜? }
+    "place": { "type": "string", "pattern": "^tile_[a-z0-9_]+$", "description": "可放置物块 id（placeable 类）" },
+    "use_effect": { "type": "string", "description": "使用效果脚本注册名，硬规则实现" }
   },
   "$defs": {
     "statsBlock": {

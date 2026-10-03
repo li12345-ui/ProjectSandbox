@@ -21,14 +21,14 @@
     "ore_pools": {
       "type": "array",
       "items": { "$ref": "#/$defs/weightedPool" },
-      "description": "鐭胯剦妯℃澘锛屾寜鏉冮噸鎶藉彇"
+      "description": "矿脉模板，按权重抽取"
     },
     "enemy_pool": {
       "type": "array",
       "items": { "$ref": "#/$defs/weightedPool" },
-      "description": "澶滈棿/甯搁┗鏁屾€〃"
+      "description": "夜间/常驻敌怪表"
     },
-    "spreads": { "type": "boolean", "default": false, "description": "鏄惁渚佃殌閭绘帴鍦板潡" }
+    "spreads": { "type": "boolean", "default": false, "description": "是否侵蚀邻接地块" }
   },
   "$defs": {
     "weightedPool": {
@@ -36,7 +36,7 @@
       "required": ["ref", "weight"],
       "additionalProperties": false,
       "properties": {
-        "ref": { "type": "string", "description": "鐩爣 id锛坱ile_ 鎴?enemy_ 鎴?loot_锛? },
+        "ref": { "type": "string", "description": "目标 id（tile_ 或 enemy_ 或 loot_）" },
         "weight": { "type": "integer", "minimum": 1 },
         "count_min": { "type": "integer", "minimum": 1, "default": 1 },
         "count_max": { "type": "integer", "minimum": 1, "default": 1 }

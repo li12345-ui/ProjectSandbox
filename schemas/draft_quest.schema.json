@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "draft_quest.schema.json",
-  "title": "Quest (draft, 寰?GDD v1.1)",
+  "title": "Quest (draft, 待 GDD v1.1)",
   "type": "object",
   "required": ["id", "title", "objectives", "rewards"],
   "additionalProperties": false,

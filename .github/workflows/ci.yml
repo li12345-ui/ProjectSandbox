@@ -22,22 +22,39 @@ jobs:
           submodules: true
           fetch-depth: 0  # 保留完整历史，方便后续 git 操作
 
-      # 2. Setup Godot 4.7.2（C# 依赖 GodotSharp，必须先装 Godot .NET 版编辑器）
+      # 2. Setup Godot 4.7.2 .NET 版（官方 Release 直下，自诊断鲁棒版：
+      #    下载 → 打印体积（防"假 200 小响应"）→ 解压到 /opt/godot
+      #    → find 定位二进制（官方 zip 内二进制名与包名不同，禁止硬编码 mv）
+      #    → 软链到 PATH → 验证版本；GodotSharp/ 随解压保留供 C# 构建使用）
       - name: Setup Godot 4.7.2 (.NET)
-        uses: barichello/godot-ci@v1
-        with:
-          version: "4.7.2"          # 约定与本地开发版本一致，避免构建漂移
-          os: "linux"
-          # 注：barichello/godot-ci 的 version 格式为 X.Y.Z（不加 -stable 后缀）
-          # .NET/mono 风味由该 action 内部逻辑处理；若 4.7.2 mono 不可用，
-          # 后续改为纯 shell 手动下载 Godot zip 兜底
+        run: |
+          set -euxo pipefail
+          cd /tmp
+          curl -fL --retry 5 --retry-all-errors --retry-delay 5 \
+            -o godot.zip "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_mono_linux_x86_64.zip"
+          ls -l godot.zip
+          SIZE=$(stat -c%s godot.zip)
+          if [ "$SIZE" -lt 50000000 ]; then
+            echo "!! 下载异常：godot.zip 仅 ${SIZE} 字节（正常约 103MB）"
+            echo "!! 响应前 800 字节："
+            head -c 800 godot.zip
+            exit 1
+          fi
+          sudo mkdir -p /opt/godot
+          unzip -q godot.zip -d /opt/godot
+          ls -la /opt/godot
+          GODOT_BIN=$(find /opt/godot -maxdepth 3 -type f -name 'Godot_*' -executable -print -quit)
+          sudo ln -sf "$GODOT_BIN" /usr/local/bin/godot
+          godot --version  # 打印版本验证安装成功
+          find /opt/godot -maxdepth 3 -type d -name 'GodotSharp'  # 确认 C# 支持就绪
 
-      # 3. Setup .NET SDK 10（2025 LTS，Godot 4.5+ 要求 .NET 8+，"or later" 含 9/10）
+      # 3. Setup .NET SDK 10（2025 LTS，Godot 4.5+ 要求 .NET 8+，"or later" 含 9/10；
+      #    不写 dotnet-quality，走 action 默认 GA 正式版通道——"stable" 不是其支持的取值，
+      #    上轮已被 runner 校验报错拒绝）
       - name: Setup .NET SDK 10
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.x"
-          dotnet-quality: "stable"
 
       # 4. 校验 .sln/.csproj 是否存在（Godot headless 不保证能生成 .NET 解决方案，
       #     用户首次使用须在本地 Godot .NET 编辑器里打开一次项目，让编辑器自动生成后提交）

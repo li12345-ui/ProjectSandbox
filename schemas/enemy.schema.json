@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "enemy.schema.json",
+  "title": "Enemy",
+  "type": "object",
+  "required": ["id", "display_name", "hp", "attack"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^enemy_[a-z0-9_]+$" },
+    "display_name": { "type": "string", "minLength": 1 },
+    "hp": { "type": "integer", "minimum": 1 },
+    "attack": { "type": "integer", "minimum": 0 },
+    "defense": { "type": "integer", "minimum": 0, "default": 0 },
+    "move_speed": { "type": "number", "exclusiveMinimum": 0, "default": 80 },
+    "ai": { "enum": ["walker", "flyer", "digger", "static"], "default": "walker" },
+    "night_only": { "type": "boolean", "default": false },
+    "spawn": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "biomes": { "type": "array", "items": { "type": "string", "pattern": "^biome_[a-z0-9_]+$" } },
+        "depth_min": { "type": "integer", "minimum": 0 },
+        "depth_max": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "loot_table": { "type": "string", "pattern": "^loot_[a-z0-9_]+$" }
+  }
+}
