@@ -18,15 +18,16 @@ public partial class Game : Node
 
     public override void _Ready()
     {
-        // 经静态单例定位器取事件总线；未注册时（本 Node 独立 headless 运行）安全降级
-        if (ServiceLocator.IsRegistered<IEventBus>())
-            _eventBus = ServiceLocator.Instance.Get<IEventBus>();
-
         GD.Print($"[Game] 就绪：FixedDt={Loop.FixedDt:F4}s MaxAccum={Loop.MaxAccumulator:F2}s");
     }
 
     public override void _Process(double delta)
     {
+        // 首帧惰性初始化：Godot 的 _Ready 子先于父，组合根（Main._Ready）注册服务
+        // 发生在本节点 _Ready 之后，故只能在 _Process 里补取（首帧时必已完成注册）
+        if (_eventBus == null && ServiceLocator.IsRegistered<IEventBus>())
+            _eventBus = ServiceLocator.Instance.Get<IEventBus>();
+
         // 1) 推进固定步长（内部含 accumulator + 上限截断 + 帧耗时采样 + FPS 滚动平均）
         Loop.Step(delta);
 
