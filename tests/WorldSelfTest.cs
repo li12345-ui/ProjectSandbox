@@ -67,11 +67,22 @@ public partial class WorldSelfTest : SceneTree
     private void TestBlockRegistry()
     {
         var registry = new BlockRegistry(new JsonDataLoader());
-        Check(registry.Count == 5, "BlockRegistry 加载 blocks.json 共五条");
+        Check(registry.Count >= 12, "BlockRegistry 加载 blocks.json 条数 ≥12（5 基础 + 7 新增矿/群系土）");
 
         var soil = registry.GetIndex("tile_soil_loam");
         Check(soil == 1, "BlockRegistry 首个块索引为 1（0 保留为空块）");
         Check(registry.GetDef(soil).DisplayName == "壤土块", "BlockRegistry 定义中文名正确");
+
+        // 阶段 2：7 个新块全部可解析，矿块硬度符合设计文档 §7
+        var oreIron = registry.GetIndex("tile_ore_iron");
+        Check(registry.GetDef(oreIron).Hardness == 3 && registry.GetDef(oreIron).Minable,
+            "BlockRegistry 铁脉块硬度 3 可挖");
+        Check(registry.GetDef(registry.GetIndex("tile_ore_crystal")).Hardness == 4, "BlockRegistry 晶簇块硬度 4");
+        Check(registry.GetDef(registry.GetIndex("tile_ore_amber")).Hardness == 4, "BlockRegistry 琥珀脉块硬度 4");
+        Check(registry.GetDef(registry.GetIndex("tile_ore_ember")).Hardness == 4, "BlockRegistry 烬炎块硬度 4");
+        Check(registry.GetDef(registry.GetIndex("tile_soil_rime")).Hardness == 1, "BlockRegistry 霜壤硬度 1");
+        Check(registry.GetDef(registry.GetIndex("tile_soil_ember")).Hardness == 1, "BlockRegistry 烬壤硬度 1");
+        Check(registry.GetDef(registry.GetIndex("tile_soil_tide")).Hardness == 1, "BlockRegistry 潮沙硬度 1");
 
         var unknownThrows = false;
         try { registry.GetIndex("tile_not_exists"); }

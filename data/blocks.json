@@ -34,6 +34,55 @@
       "solid": true,
       "minable": false,
       "hardness": 255
+    },
+    {
+      "id": "tile_ore_iron",
+      "display_name": "铁脉块",
+      "solid": true,
+      "minable": true,
+      "hardness": 3
+    },
+    {
+      "id": "tile_ore_crystal",
+      "display_name": "晶簇块",
+      "solid": true,
+      "minable": true,
+      "hardness": 4
+    },
+    {
+      "id": "tile_ore_amber",
+      "display_name": "琥珀脉块",
+      "solid": true,
+      "minable": true,
+      "hardness": 4
+    },
+    {
+      "id": "tile_ore_ember",
+      "display_name": "烬炎块",
+      "solid": true,
+      "minable": true,
+      "hardness": 4
+    },
+    {
+      "id": "tile_soil_rime",
+      "display_name": "霜壤",
+      "solid": true,
+      "minable": true,
+      "hardness": 1
+    },
+    {
+      "id": "tile_soil_ember",
+      "display_name": "烬壤",
+      "solid": true,
+      "minable": true,
+      "hardness": 1
+    },
+    {
+      "id": "tile_soil_tide",
+      "display_name": "潮沙",
+      "solid": true,
+      "minable": true,
+      "hardness": 1
     }
   ]
 }
